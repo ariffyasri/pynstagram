@@ -6,7 +6,8 @@ import hashlib
 import uuid
 import json
 import time
-import urllib.parse
+from six.moves.urllib import parse
+
 
 VERSIONS = ('GT-N7000', 'SM-N9000', 'GT-I9220', 'GT-I9100')
 RESOLUTIONS = ('720x1280', '320x480', '480x800', '1024x768', '1280x720', '768x1024', '480x320')
@@ -78,7 +79,6 @@ class PynstagramSession(object):
         if media_id is None:
             raise IOError(resp_json.get('message'))
 
-        print("Photo {} uploaded...".format(path))
         return media_id
 
     def configure_photo(self, media_id, caption):
@@ -99,12 +99,10 @@ class PynstagramSession(object):
 
         payload = 'signed_body={}.{}&ig_sig_key_version=4'.format(
             sig,
-            urllib.parse.quote(data))
+            parse.quote(data))
 
         resp = self.session.post(self.ENDPOINT_URL + '/media/configure/', payload, headers=self.HEADERS)
         resp_json = resp.json()
 
         if resp_json.get('status') != 'ok':
             raise IOError(resp_json.get('message'))
-
-        print("Description: {}".format(caption))
